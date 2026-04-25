@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CO₂ Emissions · Physics-Informed Analysis Dashboard</title>
+  <meta name="description" content="Interactive dashboard for vehicle CO2 emissions analysis using physics-informed ML models, stacking ensembles, and OOD-gated prediction pipelines.">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+
+<!-- ═══ NAVBAR ═══ -->
+<nav class="navbar">
+  <div class="nav-logo">CO₂ Dashboard</div>
+  <div class="nav-links">
+    <a href="#hero" class="active">Overview</a>
+    <a href="#features">Features</a>
+    <a href="#models">Models</a>
+    <a href="#charts-section">Charts</a>
+    <a href="#pipeline">Pipeline</a>
+    <a href="#graphs">Graphs</a>
+  </div>
+  <button class="theme-toggle" onclick="document.body.classList.toggle('light')" data-tip="Toggle theme">☀</button>
+</nav>
+
+<!-- ═══ LIGHTBOX ═══ -->
+<div class="lightbox" id="lightbox">
+  <div class="lb-close" onclick="closeLB()">✕</div>
+  <div class="lb-nav lb-prev" onclick="event.stopPropagation();navLB(-1)">‹</div>
+  <div class="lb-nav lb-next" onclick="event.stopPropagation();navLB(1)">›</div>
+  <img id="lb-img" src="" alt="Full resolution graph">
+</div>
+
+<!-- ═══ SECTION 1: HERO ═══ -->
+<section class="section hero" id="hero">
+  <div class="hero-badge"><span class="pulse-dot"></span> Vehicle CO₂ Emissions · Canada Dataset</div>
+  <h1 class="hero-title">Physics-Informed<br>CO₂ Analysis</h1>
+  <p class="hero-sub">Multi-model ML study combining stoichiometric combustion physics with ensemble learning and OOD-gated prediction pipelines for regulatory-grade accuracy.</p>
+
+  <div class="stats-row">
+    <div class="stat-card" data-tip="Total vehicles in dataset">
+      <div class="stat-icon">🚗</div>
+      <div class="stat-val" data-count="7385" data-decimals="0">0</div>
+      <div class="stat-lbl">Vehicles</div>
+    </div>
+    <div class="stat-card" data-tip="Original + engineered features">
+      <div class="stat-icon">📊</div>
+      <div class="stat-val" data-count="60" data-decimals="0">0</div>
+      <div class="stat-lbl">Features</div>
+    </div>
+    <div class="stat-card" data-tip="Best model R² score">
+      <div class="stat-icon">🎯</div>
+      <div class="stat-val" data-count="0.9979" data-decimals="4">0</div>
+      <div class="stat-lbl">Best R²</div>
+    </div>
+    <div class="stat-card" data-tip="Best Mean Absolute Percentage Error">
+      <div class="stat-icon">⚡</div>
+      <div class="stat-val" data-count="0.73" data-decimals="2" data-suffix="%">0</div>
+      <div class="stat-lbl">Best MAPE</div>
+    </div>
+  </div>
+
+  <div class="scroll-cta">
+    <span>Scroll to explore</span>
+    <div class="chevrons"><div class="chev"></div></div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 2: PHYSICS FEATURES ═══ -->
+<section class="section" id="features">
+  <div class="sec-header reveal">
+    <div class="sec-tag">Step 2 · Feature Engineering</div>
+    <h2 class="sec-title">Physics-Informed Features</h2>
+    <p class="sec-sub">7 domain-derived features from combustion thermodynamics</p>
+  </div>
+
+  <div class="corr-list reveal reveal-delay-1">
+    <div class="corr-item">
+      <div class="corr-top"><span class="corr-feat">Stoichiometric CO₂ Estimate</span><span class="corr-val">r = +0.9987</span></div>
+      <div class="pbar"><div class="pbar-fill" data-w="99.87"></div></div>
+    </div>
+    <div class="corr-item">
+      <div class="corr-top"><span class="corr-feat">Harmonic Fuel Mean</span><span class="corr-val">r = +0.9114</span></div>
+      <div class="pbar"><div class="pbar-fill" data-w="91.14"></div></div>
+    </div>
+    <div class="corr-item">
+      <div class="corr-top"><span class="corr-feat">Thermal Load Index</span><span class="corr-val">r = +0.8475</span></div>
+      <div class="pbar"><div class="pbar-fill" data-w="84.75"></div></div>
+    </div>
+    <div class="corr-item">
+      <div class="corr-top"><span class="corr-feat">City / Highway Spread</span><span class="corr-val">r = +0.8033</span></div>
+      <div class="pbar"><div class="pbar-fill" data-w="80.33"></div></div>
+    </div>
+    <div class="corr-item">
+      <div class="corr-top"><span class="corr-feat">Volumetric Efficiency Proxy</span><span class="corr-val neg">r = −0.6479</span></div>
+      <div class="pbar"><div class="pbar-fill neg" data-w="64.79"></div></div>
+    </div>
+    <div class="corr-item">
+      <div class="corr-top"><span class="corr-feat">Displacement per Cylinder</span><span class="corr-val">r = +0.5845</span></div>
+      <div class="pbar"><div class="pbar-fill" data-w="58.45"></div></div>
+    </div>
+    <div class="corr-item">
+      <div class="corr-top"><span class="corr-feat">City / Combined Ratio</span><span class="corr-val">r = +0.4551</span></div>
+      <div class="pbar"><div class="pbar-fill" data-w="45.51"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 3: MODEL RESULTS ═══ -->
+<section class="section" id="models">
+  <div class="sec-header reveal">
+    <div class="sec-tag">Steps 5–7 · Model Training</div>
+    <h2 class="sec-title">Model Performance</h2>
+    <p class="sec-sub">80/20 split · 5-fold CV · 60 features · 3 models</p>
+  </div>
+
+  <!-- Tabs -->
+  <div class="reveal reveal-delay-1">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="tab-table">📋 Results Table</button>
+      <button class="tab-btn" data-tab="tab-cards">📊 Detailed Cards</button>
+    </div>
+
+    <div class="tab-panel active" id="tab-table">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Model</th><th>R²</th><th>MAE (g/km)</th><th>RMSE (g/km)</th><th>MAPE</th><th>RAE</th><th>Rank</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Stacking Ensemble</strong><br><small style="color:var(--muted)">RF + GB + ET → ElasticNet</small></td>
+              <td><strong>0.99792</strong></td><td>1.809</td><td><strong>2.675</strong></td>
+              <td><span class="badge b-green">0.73%</span></td><td>0.0389</td>
+              <td><span class="badge b-green">🥇 Best</span></td>
+            </tr>
+            <tr>
+              <td><strong>Random Forest</strong></td>
+              <td>0.99786</td><td><strong>1.797</strong></td><td>2.711</td>
+              <td><span class="badge b-yellow">0.73%</span></td><td>0.0386</td>
+              <td><span class="badge b-yellow">🥈 2nd</span></td>
+            </tr>
+            <tr>
+              <td><strong>Linear Regression</strong><br><small style="color:var(--muted)">Baseline</small></td>
+              <td>0.99741</td><td>2.170</td><td>2.983</td>
+              <td><span class="badge b-blue">0.87%</span></td><td>0.0466</td>
+              <td><span class="badge b-blue">🥉 3rd</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-cards">
+      <div class="metrics-grid">
+        <div class="m-card">
+          <div class="m-label">🏆 Best Overall</div>
+          <div class="m-name">Stacking Ensemble</div>
+          <div class="m-row"><span>R²</span><span class="val">0.99792</span></div>
+          <div class="m-row"><span>MAE</span><span class="val">1.809 g/km</span></div>
+          <div class="m-row"><span>RMSE</span><span class="val">2.675 g/km</span></div>
+          <div class="m-row"><span>MAPE</span><span class="val">0.73%</span></div>
+          <div class="m-row"><span>Stacking gain</span><span class="val" style="color:#10b981">+2.68%</span></div>
+        </div>
+        <div class="m-card">
+          <div class="m-label">🌲 Ensemble</div>
+          <div class="m-name">Random Forest</div>
+          <div class="m-row"><span>R²</span><span class="val">0.99786</span></div>
+          <div class="m-row"><span>MAE</span><span class="val">1.797 g/km</span></div>
+          <div class="m-row"><span>RMSE</span><span class="val">2.711 g/km</span></div>
+          <div class="m-row"><span>MAPE</span><span class="val">0.73%</span></div>
+          <div class="m-row"><span>Best MAE</span><span class="val" style="color:#10b981">✓</span></div>
+        </div>
+        <div class="m-card">
+          <div class="m-label">📐 Baseline</div>
+          <div class="m-name">Linear Regression</div>
+          <div class="m-row"><span>R²</span><span class="val">0.99741</span></div>
+          <div class="m-row"><span>MAE</span><span class="val">2.170 g/km</span></div>
+          <div class="m-row"><span>RMSE</span><span class="val">2.983 g/km</span></div>
+          <div class="m-row"><span>MAPE</span><span class="val">0.87%</span></div>
+          <div class="m-row"><span>Role</span><span class="val">Reference</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 4: INTERACTIVE CHARTS ═══ -->
+<section class="section" id="charts-section">
+  <div class="sec-header reveal">
+    <div class="sec-tag">Interactive Visualisations</div>
+    <h2 class="sec-title">Live Charts</h2>
+    <p class="sec-sub">Hover over chart elements for detailed values</p>
+  </div>
+
+  <div class="reveal reveal-delay-1">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="tab-r2">R² Comparison</button>
+      <button class="tab-btn" data-tab="tab-radar">Radar Profile</button>
+      <button class="tab-btn" data-tab="tab-ood">OOD Distribution</button>
+    </div>
+
+    <div class="tab-panel active" id="tab-r2">
+      <div class="chart-container"><canvas id="chartR2"></canvas></div>
+    </div>
+    <div class="tab-panel" id="tab-radar">
+      <div class="chart-container"><canvas id="chartRadar"></canvas></div>
+    </div>
+    <div class="tab-panel" id="tab-ood">
+      <div class="chart-container" style="max-width:500px"><canvas id="chartOOD"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 5: PHYSICS-GATED PIPELINE ═══ -->
+<section class="section" id="pipeline">
+  <div class="sec-header reveal">
+    <div class="sec-tag">Novel Contribution</div>
+    <h2 class="sec-title">Physics-Gated Pipeline</h2>
+    <p class="sec-sub">Multi-layer OOD detection routes predictions through physics bounds</p>
+  </div>
+
+  <div class="compare-grid reveal reveal-delay-1">
+    <div class="cmp-card">
+      <h4>⚛️ PRNN Base (ML Residual + Physics)</h4>
+      <div class="cmp-row"><span>R²</span><span style="color:#a5b4fc;font-weight:700">0.99771</span></div>
+      <div class="cmp-row"><span>MAE</span><span>1.927 g/km</span></div>
+      <div class="cmp-row"><span>RMSE</span><span>2.807 g/km</span></div>
+      <div class="cmp-row"><span>MAPE</span><span style="color:#34d399;font-weight:700">0.79%</span></div>
+      <div class="cmp-row"><span>Max Error</span><span style="color:#fbbf24;font-weight:700">29.9 g/km</span></div>
+    </div>
+    <div class="cmp-card">
+      <h4>🚦 Full Gated Pipeline Output</h4>
+      <div class="cmp-row"><span>R²</span><span style="color:#a5b4fc;font-weight:700">0.99717</span></div>
+      <div class="cmp-row"><span>MAE</span><span>2.079 g/km</span></div>
+      <div class="cmp-row"><span>RMSE</span><span>3.123 g/km</span></div>
+      <div class="cmp-row"><span>MAPE</span><span style="color:#34d399;font-weight:700">0.84%</span></div>
+      <div class="cmp-row"><span>Max Error</span><span style="color:#fbbf24;font-weight:700">29.9 g/km</span></div>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin:36px 0 24px;color:var(--muted);font-size:.88rem" class="reveal reveal-delay-2">Confidence Tier Breakdown — 1,477 Test Vehicles</div>
+
+  <div class="tier-grid reveal reveal-delay-3">
+    <div class="tier-card t1" data-tip="Severity < 0.25 → Full ML prediction">
+      <div class="tier-icon">🟢</div>
+      <div class="tier-num" data-count="972" data-decimals="0">0</div>
+      <div class="tier-lbl">High Confidence</div>
+      <div class="tier-pct">65.8%</div>
+    </div>
+    <div class="tier-card t2" data-tip="Severity 0.25–0.50 → ML with flag">
+      <div class="tier-icon">🟡</div>
+      <div class="tier-num" data-count="372" data-decimals="0">0</div>
+      <div class="tier-lbl">Moderate (Flagged)</div>
+      <div class="tier-pct">25.2%</div>
+    </div>
+    <div class="tier-card t3" data-tip="Severity 0.50–0.75 → 70% physics + 30% ML">
+      <div class="tier-icon">🟠</div>
+      <div class="tier-num" data-count="115" data-decimals="0">0</div>
+      <div class="tier-lbl">Physics Anchored</div>
+      <div class="tier-pct">7.8%</div>
+    </div>
+    <div class="tier-card t4" data-tip="Severity ≥ 0.75 → Pure stoichiometric baseline">
+      <div class="tier-icon">🔴</div>
+      <div class="tier-num" data-count="18" data-decimals="0">0</div>
+      <div class="tier-lbl">OOD Baseline</div>
+      <div class="tier-pct">1.2%</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 6: GRAPH GALLERY ═══ -->
+<section class="section" id="graphs" style="min-height:auto;padding-bottom:80px">
+  <div class="sec-header reveal">
+    <div class="sec-tag">Generated Plots</div>
+    <h2 class="sec-title">Graph Gallery</h2>
+    <p class="sec-sub">Click any graph to view full resolution · Use arrow keys to navigate</p>
+  </div>
+
+  <div class="gallery reveal reveal-delay-1">
+    <div class="g-card wide">
+      <img src="graphs/CO2_Analysis_Dashboard.png" alt="CO2 Analysis Dashboard" loading="lazy">
+      <div class="g-cap">📊 CO₂ Analysis Dashboard — EDA, Residuals & Distributions</div>
+    </div>
+    <div class="g-card">
+      <img src="graphs/graph_model_comparison.png" alt="Model Comparison" loading="lazy">
+      <div class="g-cap">📈 Model Comparison — Predicted vs Actual</div>
+    </div>
+    <div class="g-card">
+      <img src="graphs/graph_per_model_deepdive.png" alt="Per-Model Deep Dive" loading="lazy">
+      <div class="g-cap">🔬 Per-Model Deep Dive — Error Distributions</div>
+    </div>
+    <div class="g-card">
+      <img src="graphs/CO2_Feature_Importance.png" alt="Feature Importance" loading="lazy">
+      <div class="g-cap">🎯 Feature Importance — Top RF Predictors</div>
+    </div>
+    <div class="g-card">
+      <img src="graphs/graph_scorecard_heatmap.png" alt="Scorecard Heatmap" loading="lazy">
+      <div class="g-cap">🗺️ Scorecard Heatmap — Metric Matrix</div>
+    </div>
+    <div class="g-card wide">
+      <img src="graphs/Physics_Gated_Pipeline_Analysis.png" alt="Physics Gated Pipeline" loading="lazy">
+      <div class="g-cap">⚛️ Physics-Gated Pipeline — OOD Severity vs Error</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="footer">
+  <p>CO₂ Emissions Analysis Dashboard · Built with Physics-Informed ML · Canada Vehicle Dataset (7,385 records)</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
